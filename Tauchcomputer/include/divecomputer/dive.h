@@ -1,7 +1,6 @@
 #pragma once
 
 #include <cstddef>
-#include <optional>
 #include <string>
 #include <vector>
 
@@ -18,9 +17,9 @@ public:
 
     void AddMeasurement(int second, double depthMeters);
 
-    [[nodiscard]] const std::string& Name() const noexcept;
-    [[nodiscard]] const std::vector<Measurement>& Measurements() const noexcept;
-    [[nodiscard]] std::optional<double> RateBetween(std::size_t currentIndex) const;
+    const std::string& Name() const noexcept;
+    const std::vector<Measurement>& Measurements() const noexcept;
+    bool RateBetween(std::size_t currentIndex, double& rateOut) const;
 
 private:
     static void ValidateMeasurement(int second, double depthMeters);

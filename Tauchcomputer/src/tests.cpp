@@ -25,7 +25,9 @@ void RunTests() {
     sample.AddMeasurement(2345, 8.3);
     sample.AddMeasurement(3876, 0.0);
 
-    const double firstRate = sample.RateBetween(1).value_or(0.0);
+    double firstRate = 0.0;
+    const bool hasRate = sample.RateBetween(1, firstRate);
+    assert(hasRate);
     assert(std::abs(firstRate - (-0.25)) < 1e-9);
 
     // Test 2: Mehrere Tauchgänge.
