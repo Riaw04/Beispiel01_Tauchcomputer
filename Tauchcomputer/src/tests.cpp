@@ -1,9 +1,17 @@
+// ==========================
+// File: tests.cpp
+// Author: Niklas Riepl 
+// Date: 20/04/2026
+// Description: Unit tests for the Dive and DiveLog classes to verify correct functionality and exception handling.
+// ==========================
+
 #include "divecomputer/tests.h"
 
 #include <cassert>
 #include <cmath>
 #include <sstream>
 #include <string>
+#include <iostream>
 
 #include "divecomputer/dive.h"
 #include "divecomputer/dive_data_exception.h"
@@ -12,6 +20,7 @@
 namespace divecomputer {
 
 void RunTests() {
+
     // Test 1: Beispiel aus der Aufgabenstellung.
     Dive sample("Beispiel-Tauchgang");
     sample.AddMeasurement(0, 0.0);
@@ -56,6 +65,65 @@ void RunTests() {
         sawException = true;
     }
     assert(sawException);
+
+	// Test 4: Leerer Tauchgang.
+    sawException = false;
+    try {
+        Dive emptyDive("Empty");
+        DiveLog log2;
+        log2.AddDive(emptyDive);
+    }
+    catch (const DiveDataException&) {
+        sawException = true;
+    }
+	assert(sawException);
+
+	// Test 5: Ungültiger Ausgabe-Stream.
+
+    sawException = false;
+    try {
+        DiveLog log3;
+        log3.Print(std::cerr); // std::cerr is writable, so this should not throw.
+    }
+    catch (const DiveDataException&) {
+        sawException = true;
+    }
+	assert(!sawException); // No exception should be thrown for std::cerr.
+
+	// Test 6: Ungültige Tauchgangsname.
+
+    sawException = false;
+    try {
+        Dive unnamed("");
+    }
+    catch (const DiveDataException&) {
+        sawException = true;
+	}
+
+	// Test 7: Ungültige Zeitstempelreihenfolge.
+
+    sawException = false;
+    try {
+        Dive outOfOrder("OutOfOrder");
+        outOfOrder.AddMeasurement(0, 0.0);
+        outOfOrder.AddMeasurement(10, 5.0);
+        outOfOrder.AddMeasurement(5, 3.0); // Ungültiger Zeitstempel (kleiner als vorheriger).
+    }
+    catch (const DiveDataException&) {
+        sawException = true;
+	}
+
+	// Test 8: RateBetween mit ungültigem Index.
+    sawException = false;
+    try {
+        sample.RateBetween(0); // Erster Index, kein vorheriger Messpunkt.
+    }
+    catch (const DiveDataException&) {
+        sawException = true;
+	}
+
+	// print test results
+
 }
 
 } // namespace divecomputer

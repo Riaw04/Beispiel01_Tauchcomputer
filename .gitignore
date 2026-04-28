@@ -1,0 +1,89 @@
+# =========================
+# Visual Studio
+# =========================
+
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# =========================
+# Build results
+# =========================
+
+[Bb]in/
+[Oo]bj/
+x64/
+x86/
+Debug/
+Release/
+build/
+
+# =========================
+# C++ specific
+# =========================
+
+*.ipch
+*.pch
+*.obj
+*.iobj
+*.pdb
+*.idb
+*.ilk
+*.tlog
+*.log
+*.lastbuildstate
+
+# =========================
+# Executables / binaries
+# =========================
+
+*.exe
+*.out
+*.app
+
+# =========================
+# Visual Studio database / cache
+# =========================
+
+*.VC.db
+*.VC.opendb
+
+# =========================
+# IntelliSense / cache
+# =========================
+
+ipch/
+*.aps
+*.ncb
+*.opensdf
+*.sdf
+
+# =========================
+# CMake (if used)
+# =========================
+
+CMakeFiles/
+CMakeCache.txt
+cmake-build-*/
+
+# =========================
+# Test / coverage
+# =========================
+
+*.coverage
+*.coveragexml
+
+# =========================
+# OS files
+# =========================
+
+.DS_Store
+Thumbs.db
+
+# =========================
+# Git
+# =========================
+
+*.orig

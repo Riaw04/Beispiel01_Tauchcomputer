@@ -1,3 +1,10 @@
+// ==========================
+// File: main.cpp
+// Author: Niklas Riepl 
+// Date: 20/04/2026
+// Description: Main program to demonstrate the functionality of the Dive and DiveLog classes. 
+// ==========================
+
 #include <exception>
 #include <fstream>
 #include <iostream>
@@ -11,7 +18,10 @@ int main() {
     using namespace divecomputer;
 
     try {
-        RunTests();
+		
+        RunTests(); // Run unit tests. 
+
+		// sample dives
 
         Dive firstDive("Ausgabe-Tauchgang A");
         firstDive.AddMeasurement(0, 0.0);
@@ -32,14 +42,15 @@ int main() {
         log.AddDive(firstDive);
         log.AddDive(secondDive);
 
-        std::cout << "Alle Tests erfolgreich.\n\n";
-        log.Print(std::cout);
+		log.Print(std::cout); //print to console.
 
         std::ofstream file("tauchgaenge.txt");
         if (!file.is_open()) {
             throw DiveDataException("Could not open output file 'tauchgaenge.txt'.");
         }
-        log.Print(file);
+		log.Print(file); //print to file.
+
+        std::cout << "Alle Tests erfolgreich.\n\n";
 
         return 0;
     }
