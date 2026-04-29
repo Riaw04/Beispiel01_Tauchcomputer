@@ -9,9 +9,9 @@
 
 #include <cassert>
 #include <cmath>
+#include <iostream>
 #include <sstream>
 #include <string>
-#include <iostream>
 
 #include "divecomputer/dive.h"
 #include "divecomputer/dive_data_exception.h"
@@ -20,9 +20,22 @@
 namespace divecomputer {
 
 void RunTests() {
+    int passedTests = 0;
+    int failedTests = 0;
+
+    const auto report = [&](const std::string& name, const bool success) {
+        std::cout << "[TEST] " << name << ": " << (success ? "OK" : "FEHLER") << '\n';
+        if (success) {
+            ++passedTests;
+        }
+        else {
+            ++failedTests;
+        }
+    };
 
     // Test 1: Beispiel aus der Aufgabenstellung.
     Dive sample("Beispiel-Tauchgang");
+    bool testSuccess = true;
     sample.AddMeasurement(0, 0.0);
     sample.AddMeasurement(10, 2.5);
     sample.AddMeasurement(50, 6.8);
@@ -33,9 +46,10 @@ void RunTests() {
     sample.AddMeasurement(1780, 15.8);
     sample.AddMeasurement(2345, 8.3);
     sample.AddMeasurement(3876, 0.0);
-
     const double firstRate = sample.RateBetween(1).value_or(0.0);
-    assert(std::abs(firstRate - (-0.25)) < 1e-9);
+    testSuccess = std::abs(firstRate - (-0.25)) < 1e-9;
+    report("Beispiel-Ratenberechnung", testSuccess);
+    assert(testSuccess);
 
     // Test 2: Mehrere Tauchgänge.
     Dive shortDive("Kurztest");
@@ -50,10 +64,12 @@ void RunTests() {
     std::ostringstream memoryOutput;
     log.Print(memoryOutput);
     const std::string text = memoryOutput.str();
-    assert(text.find("Dive 1: Beispiel-Tauchgang") != std::string::npos);
-    assert(text.find("Dive 2: Kurztest") != std::string::npos);
-    assert(text.find("-0.250") != std::string::npos);
-    assert(text.find("+0.100") != std::string::npos);
+    testSuccess = text.find("Dive 1: Beispiel-Tauchgang") != std::string::npos
+        && text.find("Dive 2: Kurztest") != std::string::npos
+        && text.find("-0.250") != std::string::npos
+        && text.find("+0.100") != std::string::npos;
+    report("Mehrere Tauchgänge im Log", testSuccess);
+    assert(testSuccess);
 
     // Test 3: Exceptions.
     bool sawException = false;
@@ -64,6 +80,7 @@ void RunTests() {
     catch (const DiveDataException&) {
         sawException = true;
     }
+    report("Exception bei negativem Zeitstempel", sawException);
     assert(sawException);
 
 	// Test 4: Leerer Tauchgang.
@@ -76,7 +93,8 @@ void RunTests() {
     catch (const DiveDataException&) {
         sawException = true;
     }
-	assert(sawException);
+    report("Exception bei leerem Tauchgang", sawException);
+    assert(sawException);
 
 	// Test 5: Ungültiger Ausgabe-Stream.
 
@@ -88,7 +106,8 @@ void RunTests() {
     catch (const DiveDataException&) {
         sawException = true;
     }
-	assert(!sawException); // No exception should be thrown for std::cerr.
+    report("Kein Fehler bei std::cerr-Stream", !sawException);
+    assert(!sawException); // No exception should be thrown for std::cerr.
 
 	// Test 6: Ungültige Tauchgangsname.
 
@@ -99,6 +118,8 @@ void RunTests() {
     catch (const DiveDataException&) {
         sawException = true;
 	}
+    report("Exception bei leerem Namen", sawException);
+    assert(sawException);
 
 	// Test 7: Ungültige Zeitstempelreihenfolge.
 
@@ -112,17 +133,22 @@ void RunTests() {
     catch (const DiveDataException&) {
         sawException = true;
 	}
+    report("Exception bei falscher Zeitreihenfolge", sawException);
+    assert(sawException);
 
 	// Test 8: RateBetween mit ungültigem Index.
     sawException = false;
     try {
-        sample.RateBetween(0); // Erster Index, kein vorheriger Messpunkt.
+        const auto invalidRate = sample.RateBetween(0); // Erster Index, kein vorheriger Messpunkt.
+        sawException = invalidRate.has_value();
     }
     catch (const DiveDataException&) {
         sawException = true;
 	}
+    report("RateBetween liefert nullopt bei Index 0", !sawException);
+    assert(!sawException);
 
-	// print test results
+    std::cout << "Testergebnis: " << passedTests << " erfolgreich, " << failedTests << " fehlgeschlagen.\n";
 
 }
 
